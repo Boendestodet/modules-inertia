@@ -1,14 +1,14 @@
 <?php
 
-namespace Dongrim\ModulesInertia;
+namespace Crmdesenvolvimentos\ModulesInertia;
 
 use Illuminate\Support\Str;
 use Nwidart\Modules\Facades\Module;
 use Illuminate\Support\Facades\File;
-use Dongrim\ModulesInertia\Exceptions\ModuleNotExist;
-use Dongrim\ModulesInertia\Exceptions\ModuleNameNotFound;
-use Dongrim\ModulesInertia\Exceptions\FilePathIsIncorrect;
-use Dongrim\ModulesInertia\Exceptions\FilePathNotSpecified;
+use Crmdesenvolvimentos\ModulesInertia\Exceptions\ModuleNotExist;
+use Crmdesenvolvimentos\ModulesInertia\Exceptions\ModuleNameNotFound;
+use Crmdesenvolvimentos\ModulesInertia\Exceptions\FilePathIsIncorrect;
+use Crmdesenvolvimentos\ModulesInertia\Exceptions\FilePathNotSpecified;
 
 class ModulesInertiaSource
 {
@@ -60,13 +60,17 @@ class ModulesInertiaSource
 
     private function getModuleName(string $moduleName): string
     {
-        $moduleName = Str::title($moduleName);
+        $module_name = Str::title($moduleName);
 
-        if (!Module::has($moduleName)) {
+        if (!Module::has($module_name)) {
+            $module_name_other = Str::ucfirst($moduleName);
+            if (Module::has($module_name_other)){
+                return $module_name_other;
+            }
             throw ModuleNotExist::make($moduleName);
         }
 
-        return $moduleName;
+        return $module_name;
     }
 
     private function explodeSource(string $source): array
