@@ -116,6 +116,11 @@ createInertiaApp({
 });
 ```
 
+### Change app.blade.php with @vite line
+```php
+@vite(['resources/js/app.ts'])
+```
+
 ## Console command
 
 **You can run `php artisan module:publish-stubs` to publish stubs.**
