@@ -84,27 +84,35 @@ php artisan vendor:publish --provider="Crmdesenvolvimentos\ModulesInertia\Module
 ### If you use Vue version 3
 
 ```javascript
-import { createApp, h } from "vue";
-import { createInertiaApp } from "@inertiajs/inertia-vue3";
+import { createApp, h, DefineComponent } from 'vue';
+import { createInertiaApp } from '@inertiajs/vue3';
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import { ZiggyVue } from '../../vendor/tightenco/ziggy';
+
+const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({
-  resolve: (name) => {
-    const pages = import.meta.glob("./Pages/**/*.vue", { eager: true });
-    let isModule = name.split("::");
-    if (isModule.length > 1) {
-      const pageModules = import.meta.glob("/Modules/**/*.vue", { eager: true });
-      let module = isModule[0];
-      let pathTo = isModule[1];
-      return pageModules[`/Modules/${module}/${pathTo}.vue`];
-    } else {
-      return pages[`./Pages/${name}.vue`];
-    }
+    title: (title) => `${title} - ${appName}`,
+    resolve: (name) => {
+      let page = null;
+
+      let isModule = name.split("::");
+      if (isModule.length > 1) {
+          let module = isModule[0];
+          let pathTo = isModule[1];
+          page = resolvePageComponent(`/Modules/${module}/${pathTo}.vue`, import.meta.glob<DefineComponent>('/Modules/**/*.vue'));
+      } else {
+          page = resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob<DefineComponent>('./Pages/**/*.vue'));
+      }
+      //...
+      return page;
   },
-  setup({ el, App, props, plugin }) {
-    createApp({ render: () => h(App, props) })
-      .use(plugin)
-      .mount(el);
-  },
+    setup({ el, App, props, plugin }) {
+        createApp({ render: () => h(App, props) })
+            .use(plugin)
+            .use(ZiggyVue)
+            .mount(el);
+    },
 });
 ```
 
